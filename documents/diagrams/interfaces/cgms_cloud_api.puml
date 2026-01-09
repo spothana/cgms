@@ -1,7 +1,7 @@
 @startuml cgms_cloud_api
 skinparam componentStyle rectangle
 
-title CGMS Cloud API Interface (Updated)
+title CGMS Cloud API Interface
 
 component "Mobile App" as App
 component "API Gateway" as API

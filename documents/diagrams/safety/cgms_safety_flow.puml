@@ -1,7 +1,7 @@
 @startuml cgms_safety_flow
 skinparam componentStyle rectangle
 
-title Safety-Critical Flow (IEC 62304 – Updated)
+title Safety-Critical Flow (IEC 62304)
 
 component "Glucose Sensor" as Sensor
 component "MCU / Firmware" as MCU

@@ -1,7 +1,7 @@
 @startuml cgms_fault_handling
 skinparam componentStyle rectangle
 
-title CGMS Fault Handling Architecture (Updated)
+title CGMS Fault Handling Architecture
 
 component "Glucose Sensor" as Sensor
 component "MCU / Firmware" as MCU

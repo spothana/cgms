@@ -1,7 +1,7 @@
 @startuml cgms_sensor_if
 skinparam componentStyle rectangle
 
-title CGMS Sensor Interface (Updated)
+title CGMS Sensor Interface
 
 component "Enzyme Electrode" as Electrode
 component "Temperature Sensor" as Temp
