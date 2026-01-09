@@ -1,14 +1,44 @@
 @startuml cgms_sequence
-participant Sensor
-participant MCU
-participant "Mobile App" as App
-participant Cloud
+title CGMS Measurement & Reporting Sequence
 
-Sensor -> MCU : sample glucose
-MCU -> MCU : filter + compensate
-MCU -> App : BLE notify(glucose)
-App -> App : update UI
-App -> Cloud : upload reading
-Cloud -> App : ack / analytics
+participant "Glucose Sensor" as Sensor
+participant "MCU / Firmware" as MCU
+participant "Power Manager" as Power
+participant "Lifecycle Manager" as Life
+participant "Diagnostics Manager" as Diag
+participant "Mobile App" as App
+participant "Cloud Backend" as Cloud
+
+== Measurement Trigger ==
+Power -> MCU : allowMeasurement()
+Life -> MCU : isMeasurementAllowed()
+
+alt Sensor expired or critical power
+    MCU -> App : BLE notify(status=EXPIRED)
+    App -> App : show replace sensor message
+else Measurement allowed
+    Sensor -> MCU : readRaw() [RawSensorSample]
+    MCU -> MCU : filter + temp compensate
+    MCU -> MCU : compute glucose + trend
+end
+
+== Validation & Safety ==
+MCU -> Diag : runSelfChecks()
+alt Diagnostic fault detected
+    Diag -> MCU : faultConfirmed
+    MCU -> App : BLE notify(status=FAULT)
+    App -> App : show sensor error
+else Estimate valid
+    MCU -> App : BLE notify(GlucoseEstimate)
+end
+
+== Local Analytics ==
+App -> App : update UI (value + trend)
+App -> App : compute short-term stats
+
+== Telemetry & Cloud Analytics ==
+App -> Cloud : upload reading + telemetry
+Cloud -> Cloud : analytics / aggregation
+Cloud -> App : ack / insights (optional)
 
 @enduml
