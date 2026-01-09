@@ -3,48 +3,85 @@ title Fault Tree Analysis – Incorrect Glucose Value
 
 skinparam componentStyle rectangle
 
-component "Incorrect\nGlucose Value" as TOP
+component "Incorrect\nGlucose Value\nPresented to User" as TOP
 
-component "Sensor Failure" as S1
-component "Signal Processing Error" as S2
-component "Calibration Error" as S3
-component "Communication Failure" as S4
+' --------------------
+' Level 1 Causes
+' --------------------
+component "Sensor Degradation" as S1
+component "Signal Processing Failure" as S2
+component "Lifecycle / Expiration Failure" as S3
+component "Power-Related Failure" as S4
+component "Data Validation Failure" as S5
 
 TOP --> S1
 TOP --> S2
 TOP --> S3
 TOP --> S4
+TOP --> S5
 
+' --------------------
+' Sensor Degradation
+' --------------------
 component "Enzyme Degradation" as S1a
-component "Temperature Drift" as S1b
+component "Electrode Fouling" as S1b
+component "Temperature Out-of-Range" as S1c
 
 S1 --> S1a
 S1 --> S1b
+S1 --> S1c
 
-component "Filter Misconfiguration" as S2a
-component "ADC Saturation" as S2b
+' --------------------
+' Signal Processing
+' --------------------
+component "ADC Saturation" as S2a
+component "Excess Noise" as S2b
+component "Temperature Compensation Error" as S2c
 
 S2 --> S2a
 S2 --> S2b
+S2 --> S2c
 
-component "User Skipped Calibration" as S3a
-component "Bad Reference Value" as S3b
+' --------------------
+' Lifecycle / Expiration
+' --------------------
+component "Wear-Time Exceeded\nBut Measurement Allowed" as S3a
+component "Expired Sensor\nNot Invalidated" as S3b
 
 S3 --> S3a
 S3 --> S3b
 
-component "BLE Packet Loss" as S4a
-component "Data Corruption" as S4b
+' --------------------
+' Power-Related
+' --------------------
+component "Low Battery\nDuring Sampling" as S4a
+component "Brownout Affecting ADC" as S4b
 
 S4 --> S4a
 S4 --> S4b
 
+' --------------------
+' Validation / Diagnostics
+' --------------------
+component "Diagnostics Missed Fault" as S5a
+component "Quality Flag Incorrect" as S5b
+component "Invalid Data Sent Over BLE" as S5c
+
+S5 --> S5a
+S5 --> S5b
+S5 --> S5c
+
+' --------------------
+' Mitigations
+' --------------------
 note bottom of TOP
-Risk Control Examples:
-- Range checks
-- Rate-of-change limits
-- CRC + retries
-- Sensor expiration enforcement
+Implemented Risk Controls:
+- Factory calibration only
+- Sensor wear-time enforcement
+- Power-aware sampling
+- Diagnostics + fault escalation
+- Quality / validity gating
+- No BLE exposure of invalid data
 end note
 
 @enduml

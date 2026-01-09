@@ -1,27 +1,65 @@
 @startuml cgms_sensor_if
 skinparam componentStyle rectangle
 
-title CGMS Sensor Interface
+title CGMS Sensor Interface (Updated)
 
 component "Enzyme Electrode" as Electrode
+component "Temperature Sensor" as Temp
 component "Analog Front End (AFE)" as AFE
 component "ADC" as ADC
-component "MCU" as MCU
+component "MCU / Firmware" as MCU
+component "Power Monitor" as Power
+component "On-Device Diagnostics" as Diag
 
-Electrode --> AFE : glucose current (nA)
+' --------------------
+' Primary sensing path
+' --------------------
+Electrode --> AFE : glucose-dependent current (nA)
 AFE --> ADC : conditioned voltage
 ADC --> MCU : digital samples
+
+' --------------------
+' Environmental compensation
+' --------------------
+Temp --> MCU : temperature (°C)
+
+' --------------------
+' Power & health
+' --------------------
+Power --> MCU : battery level / brownout
+AFE --> Diag : saturation / noise metrics
+ADC --> Diag : clipping / timing errors
+MCU --> Diag : signal quality metrics
 
 note right of AFE
 AFE Functions:
 - Transimpedance amplifier
 - Noise filtering
-- Gain calibration
+- Factory gain calibration
+(No user calibration)
 end note
 
 note right of MCU
-Sampling Interval:
-1–5 minutes
+Firmware Responsibilities:
+- Temperature compensation
+- Signal conditioning
+- Sampling control (power-aware)
+- Data validation
+end note
+
+note right of Diag
+Diagnostics Scope:
+- Electrode degradation
+- Signal saturation
+- Temperature out-of-range
+- Power anomalies
+end note
+
+note bottom of Power
+Single-use battery:
+- Non-rechargeable
+- Finite energy budget
 end note
 
 @enduml
+

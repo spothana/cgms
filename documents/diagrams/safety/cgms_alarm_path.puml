@@ -1,26 +1,57 @@
 @startuml cgms_alarm_path
-skinparam componentStyle rectangle
+title CGMS Alarm Path 
 
-title CGMS Alarm Path
+participant "Glucose Sensor" as Sensor
+participant "MCU / Firmware" as MCU
+participant "Power Manager" as Power
+participant "Lifecycle Manager" as Life
+participant "Diagnostics Manager" as Diag
+participant "Mobile App" as App
+participant User
 
-component Sensor
-component MCU
-component "Mobile App" as App
-component User
+== Measurement Gating ==
+Power -> MCU : power OK?
+Life -> MCU : measurement allowed?
 
-Sensor --> MCU : glucose reading
-MCU --> MCU : threshold evaluation
-MCU --> App : BLE alert event
-App --> User : audible / visual alarm
+alt Sensor expired or critical power
+    MCU -> App : notify(status=EXPIRED)
+    App -> User : replace sensor alert
+else Measurement allowed
+    Sensor -> MCU : raw sample
+    MCU -> MCU : compute GlucoseEstimate
+end
+
+== Safety & Alarm Evaluation ==
+MCU -> Diag : validate estimate
+
+alt Diagnostic fault
+    Diag -> MCU : fault confirmed
+    MCU -> App : notify(status=FAULT)
+    App -> User : sensor error alert
+else Estimate valid
+    MCU -> MCU : evaluate thresholds + trend
+    MCU -> App : notify(ALARM_EVENT)
+    App -> User : audible / visual alarm
+end
 
 note right of MCU
-Latency Requirement:
-< 10 seconds
+Alarm generation:
+- Threshold breach
+- Rapid rise / fall
+Latency target:
+< 10 seconds end-to-end
 end note
 
 note right of App
-Redundancy:
-Local alerts even if cloud unavailable
+Local alarms:
+- No cloud dependency
+- OS-native notifications
+end note
+
+note left of Diag
+Fault alarms override
+glucose alarms
 end note
 
 @enduml
+

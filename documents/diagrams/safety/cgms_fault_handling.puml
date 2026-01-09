@@ -1,29 +1,69 @@
 @startuml cgms_fault_handling
 skinparam componentStyle rectangle
 
-title CGMS Fault Handling Architecture
+title CGMS Fault Handling Architecture (Updated)
 
-component Sensor
-component Firmware
-component FaultManager
-component AlertLogic
+component "Glucose Sensor" as Sensor
+component "MCU / Firmware" as MCU
+component "Diagnostics Manager" as Diag
+component "Fault Manager" as Fault
+component "Lifecycle Manager" as Life
+component "Alert Manager" as Alert
+component "Mobile App" as App
 component User
 
-Sensor --> Firmware : abnormal data
-Firmware --> FaultManager : fault detected
-FaultManager --> AlertLogic : fault state
-AlertLogic --> User : sensor error alert
+' --------------------
+' Fault detection
+' --------------------
+Sensor --> MCU : abnormal signal / missing data
+MCU --> Diag : signal quality metrics
 
-note right of FaultManager
-Fault Types:
+' --------------------
+' Fault classification
+' --------------------
+Diag --> Fault : fault candidate
+Fault --> Fault : classify (transient / terminal)
+
+' --------------------
+' Escalation & enforcement
+' --------------------
+Fault --> Life : terminal fault?
+Life --> MCU : invalidate measurements
+
+' --------------------
+' User notification
+' --------------------
+Fault --> Alert : fault state
+Alert --> App : BLE notify(fault)
+App --> User : sensor error / replace sensor
+
+note right of Diag
+Detection sources:
 - Sensor drift
 - Signal saturation
-- BLE timeout
+- Temperature out-of-range
+- ADC anomalies
 end note
 
-note bottom of AlertLogic
+note right of Fault
+Fault handling:
+- Debounce / persistence
+- Escalation rules
+- Terminal vs recoverable
+end note
+
+note right of Life
+Terminal faults:
+- Force Expired state
+- No recovery allowed
+end note
+
+note bottom of Alert
 Regulatory:
 ISO 14971 Risk Control
+Fault alarms override
+glucose alarms
 end note
 
 @enduml
+

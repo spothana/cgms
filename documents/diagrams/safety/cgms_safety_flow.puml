@@ -1,29 +1,63 @@
 @startuml cgms_safety_flow
 skinparam componentStyle rectangle
 
-title Safety-Critical Flow (IEC 62304)
+title Safety-Critical Flow (IEC 62304 – Updated)
 
-component Sensor
-component Firmware
-component Validation
-component AlertLogic
+component "Glucose Sensor" as Sensor
+component "MCU / Firmware" as MCU
+component "Power Manager" as Power
+component "Lifecycle Manager" as Life
+component "Signal Validation" as Validate
+component "Diagnostics Manager" as Diag
+component "Alert Manager" as Alert
 component User
 
-Sensor --> Firmware : raw glucose
-Firmware --> Validation : processed value
-Validation --> AlertLogic : validated glucose
-AlertLogic --> User : HIGH / LOW alarm
+' --------------------
+' Measurement gating
+' --------------------
+Power --> MCU : power OK?
+Life --> MCU : measurement allowed?
 
-note right of Validation
+' --------------------
+' Measurement & processing
+' --------------------
+Sensor --> MCU : raw sensor sample
+MCU --> Validate : conditioned signal
+
+' --------------------
+' Safety validation
+' --------------------
+Validate --> Diag : quality metrics
+Diag --> Validate : fault / OK
+
+' --------------------
+' Decision & alerting
+' --------------------
+Validate --> Alert : validated glucose + trend
+Diag --> Alert : fault state (override)
+
+Alert --> User : glucose alarm / fault alert
+
+note right of Validate
 Safety Controls:
 - Range checks
 - Rate-of-change limits
-- CRC validation
+- Quality / validity gating
+- Expiration enforcement
 end note
 
-note right of AlertLogic
+note right of Diag
+Diagnostics:
+- Sensor degradation
+- Power anomalies
+- Signal integrity
+end note
+
+note right of Alert
 Software Safety Class: C
-Fail-safe behavior
+Fail-safe behavior:
+- Fault overrides glucose
+- No alarm on invalid data
 end note
 
 @enduml

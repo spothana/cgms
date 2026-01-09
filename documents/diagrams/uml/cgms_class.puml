@@ -1,28 +1,57 @@
 @startuml cgms_class
 skinparam classAttributeIconSize 0
 
+title CGMS – Software Class Diagram (Typed Signals)
+
+' --------------------
+' Data Types
+' --------------------
+class RawSensorSample {
+  +adcCounts: int
+  +temperatureC: float
+  +timestamp: uint32
+}
+
+class ConditionedSignal {
+  +normalizedValue: float
+  +temperatureCompensated: bool
+}
+
+enum Trend {
+  RapidRise
+  Rise
+  Stable
+  Fall
+  RapidFall
+}
+
+class GlucoseEstimate {
+  +mgDl: float
+  +trend: Trend
+  +valid: bool
+}
+
+' --------------------
+' Processing Components
+' --------------------
 class GlucoseSensor {
-  +readRaw(): float
-  +calibrate()
+  +readRaw(): RawSensorSample
 }
 
 class SignalProcessor {
-  +filter(signal): float
-  +temperatureComp(signal, temp): float
+  +filter(sample: RawSensorSample): ConditionedSignal
 }
 
 class GlucoseEstimator {
-  +computeMgDl(signal): float
-  +computeTrend(): Trend
+  +compute(signal: ConditionedSignal): GlucoseEstimate
 }
 
 class AlertManager {
-  +checkThresholds(value)
-  +triggerAlert(type)
+  +checkThresholds(estimate: GlucoseEstimate)
 }
 
 class BLEService {
-  +notify(value)
+  +notify(estimate: GlucoseEstimate)
 }
 
 GlucoseSensor --> SignalProcessor

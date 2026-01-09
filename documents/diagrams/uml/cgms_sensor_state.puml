@@ -1,5 +1,5 @@
 @startuml cgms_sensor_state
-title CGMS Sensor Lifecycle State Machine
+title CGMS Sensor Lifecycle State Machine (Single-Use Sensor)
 
 [*] --> Manufacturing
 
@@ -8,28 +8,53 @@ Stored --> Activated : user applies sensor
 Activated --> WarmUp : power on
 
 WarmUp --> Measuring : stabilization complete
+
 Measuring --> Measuring : periodic sample
 
-Measuring --> Calibration : calibration requested
-Calibration --> Measuring : calibration successful
+Measuring --> InternalCalibration : system recalibration needed
+InternalCalibration --> Measuring : calibration successful
+InternalCalibration --> DiagnosticsRunning : calibration anomaly
 
-Measuring --> Fault : sensor error
-Calibration --> Fault : calibration failure
+Measuring --> DiagnosticsRunning : signal anomaly detected
 
-Fault --> Measuring : recoverable fault
+DiagnosticsRunning --> Measuring : issue resolved
+DiagnosticsRunning --> Fault : fault confirmed
+
 Fault --> Expired : unrecoverable fault
 
 Measuring --> Expired : wear-time exceeded
-Expired --> [*]
+Measuring --> Expired : battery exhausted
+
+Expired --> Shutdown
+Shutdown --> [*]
 
 note right of Measuring
-Normal operation
-Sampling every 1–5 minutes
+Normal operation:
+- Valid glucose + trend
+- Sampling every 1–5 minutes
+end note
+
+note right of InternalCalibration
+Factory-calibrated system
+No user intervention
+end note
+
+note right of DiagnosticsRunning
+Transient evaluation:
+- Signal quality
+- Sensor health
 end note
 
 note right of Fault
-Triggers user alert
-Disables insulin automation
+Confirmed failure:
+- User notified
+- Glucose marked invalid
+end note
+
+note right of Expired
+End of sensor life:
+- Data invalid
+- Replacement required
 end note
 
 @enduml

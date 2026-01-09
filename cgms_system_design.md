@@ -40,7 +40,10 @@
 ![Sequence Diagram](out/documents/diagrams/uml/cgms_sequence/cgms_sequence.png)
 
 ### 4.3 Sensor Lifecycle State Machine
-![State Machine](out/documents/diagrams/uml/cgms_sensor_state/cgms_sensor_state.png)
+![Lifecycle State Machine](out/documents/diagrams/uml/cgms_sensor_state/cgms_sensor_state.png)
+
+### 4.4 Sensor Power State Macine
+![Power State Machine](out/documents/diagrams/uml/cgms_power_state_machine\cgms_power_state_machine.png)
 
 ---
 

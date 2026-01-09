@@ -1,0 +1,56 @@
+@startuml cgms_power_state_machine
+title CGMS Power Management – State Machine
+
+[*] --> Shipping
+
+Shipping --> Off : device shipped
+Off --> Idle : sensor activated
+
+Idle --> Sampling : scheduled sample
+Sampling --> Idle : sample complete
+
+Idle --> LowPower : battery < LOW_THRESHOLD
+Sampling --> LowPower : battery < LOW_THRESHOLD
+
+LowPower --> Sampling : reduced-rate sample
+Sampling --> LowPower : sample complete
+
+LowPower --> Critical : battery < CRITICAL_THRESHOLD
+Critical --> Shutdown : safety timeout reached
+
+Idle --> Charging : external power detected
+LowPower --> Charging : external power detected
+Critical --> Charging : external power detected
+
+Charging --> Idle : battery charged
+Charging --> Sampling : immediate sample request
+
+Shutdown --> [*]
+
+note right of Sampling
+Normal operation:
+- Full sampling rate
+- BLE notifications enabled
+end note
+
+note right of LowPower
+Mitigations:
+- Reduced sampling rate
+- Suppress non-critical BLE traffic
+- Power telemetry enabled
+end note
+
+note right of Critical
+Safety mode:
+- No glucose automation
+- Persistent user alert
+- Diagnostics only
+end note
+
+note right of Charging
+Behavior:
+- Suspend non-essential tasks
+- Resume safely after charge
+end note
+
+@enduml

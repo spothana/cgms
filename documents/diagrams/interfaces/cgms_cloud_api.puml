@@ -1,27 +1,82 @@
 @startuml cgms_cloud_api
 skinparam componentStyle rectangle
 
-title CGMS Cloud API Interface
+title CGMS Cloud API Interface (Updated)
 
 component "Mobile App" as App
 component "API Gateway" as API
+component "Ingestion Service" as Ingest
 component "Analytics Engine" as Analytics
+component "Diagnostics Service" as Diag
+component "Device Registry" as Registry
 component "Data Store" as DB
 component "Clinician Portal" as Portal
+component "Ops / Support Portal" as Ops
 
-App --> API : POST /glucose
-App --> API : POST /events
-API --> DB : store readings
-API --> Analytics : trigger analysis
-Analytics --> DB : trends
+' --------------------
+' Ingestion Paths
+' --------------------
+App --> API : POST /readings
+App --> API : POST /telemetry
+App --> API : POST /diagnostics
+
+API --> Ingest : validate + normalize
+
+' --------------------
+' Persistence
+' --------------------
+Ingest --> DB : store readings
+Ingest --> DB : store telemetry
+Ingest --> DB : store diagnostics
+
+' --------------------
+' Analytics
+' --------------------
+Ingest --> Analytics : enqueue analysis
+Analytics --> DB : trends / aggregates
+
+' --------------------
+' Diagnostics & Fleet Health
+' --------------------
+Ingest --> Diag : fault events
+Diag --> DB : fleet health metrics
+
+' --------------------
+' Device Lifecycle
+' --------------------
+Ingest --> Registry : update device state
+Registry --> DB : lifecycle records
+
+' --------------------
+' Read APIs
+' --------------------
 Portal --> API : GET /reports
-API --> Portal : dashboards
+API --> Portal : glucose + trends
+
+Ops --> API : GET /fleet/health
+API --> Ops : diagnostics dashboards
 
 note bottom of API
 Security:
-- OAuth2
+- OAuth2 / OpenID Connect
 - TLS 1.2+
 - PHI encrypted at rest
+- No device control endpoints
+end note
+
+note right of Analytics
+Non-real-time:
+- Trend analysis
+- Population insights
+- No safety-critical decisions
+end note
+
+note right of Diag
+Operational use only:
+- Fault clustering
+- Device reliability
+- No clinical interpretation
 end note
 
 @enduml
+
