@@ -2,6 +2,11 @@
 
 This repository contains a compact, illustrative system architecture for a Continuous Glucose Monitoring System (CGMS).
 
+
+## System Architecture & Safety Design
+
+**[CGMS System Architecture & Safety Design](cgms_system_design.md)**
+
 It is intended to demonstrate:
 - how I approach system-level design for safety-critical embedded products
 - how I reason about responsibilities, interfaces, and failure modes
