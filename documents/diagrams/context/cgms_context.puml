@@ -1,0 +1,22 @@
+@startuml cgms_context
+skinparam rectangle {
+  BackgroundColor #F9F9F9
+  BorderColor black
+}
+
+actor Patient
+actor Clinician
+
+rectangle "CGMS System" {
+  rectangle "Sensor + Transmitter"
+  rectangle "Mobile App"
+  rectangle "Cloud Backend"
+}
+
+Patient --> "Sensor + Transmitter" : wears
+"Sensor + Transmitter" --> "Mobile App" : BLE glucose data
+"Mobile App" --> "Cloud Backend" : HTTPS upload
+Clinician --> "Cloud Backend" : view reports
+"Mobile App" --> Patient : alerts / UI
+
+@enduml

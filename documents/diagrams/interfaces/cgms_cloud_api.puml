@@ -1,0 +1,27 @@
+@startuml cgms_cloud_api
+skinparam componentStyle rectangle
+
+title CGMS Cloud API Interface
+
+component "Mobile App" as App
+component "API Gateway" as API
+component "Analytics Engine" as Analytics
+component "Data Store" as DB
+component "Clinician Portal" as Portal
+
+App --> API : POST /glucose
+App --> API : POST /events
+API --> DB : store readings
+API --> Analytics : trigger analysis
+Analytics --> DB : trends
+Portal --> API : GET /reports
+API --> Portal : dashboards
+
+note bottom of API
+Security:
+- OAuth2
+- TLS 1.2+
+- PHI encrypted at rest
+end note
+
+@enduml

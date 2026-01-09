@@ -1,0 +1,50 @@
+@startuml cgms_ble_gatt
+skinparam classAttributeIconSize 0
+skinparam stereotypeCBackgroundColor #EEF
+
+title CGMS BLE GATT Profile
+
+class "CGMS Device" <<Peripheral>>
+class "Mobile App" <<Central>>
+
+class CGM_Service {
+  UUID: 0x1808 (Custom)
+}
+
+class GlucoseMeasurement {
+  UUID: 0x2A18
+  +glucose_mgdl : uint16
+  +trend : int8
+  +timestamp : uint32
+}
+
+class DeviceStatus {
+  UUID: 0x2A1C
+  +battery_pct : uint8
+  +sensor_state : enum
+}
+
+class ControlPoint {
+  UUID: 0x2A52
+  +calibrate()
+  +reset()
+}
+
+"CGMS Device" -- CGM_Service
+CGM_Service *-- GlucoseMeasurement
+CGM_Service *-- DeviceStatus
+CGM_Service *-- ControlPoint
+
+"Mobile App" --> GlucoseMeasurement : notify
+"Mobile App" --> DeviceStatus : read
+"Mobile App" --> ControlPoint : write
+
+note right of CGM_Service
+Security:
+- LE Secure Connections
+- Bonding required
+- Encrypted characteristics
+end note
+
+@enduml
+

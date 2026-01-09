@@ -1,0 +1,29 @@
+@startuml cgms_safety_flow
+skinparam componentStyle rectangle
+
+title Safety-Critical Flow (IEC 62304)
+
+component Sensor
+component Firmware
+component Validation
+component AlertLogic
+component User
+
+Sensor --> Firmware : raw glucose
+Firmware --> Validation : processed value
+Validation --> AlertLogic : validated glucose
+AlertLogic --> User : HIGH / LOW alarm
+
+note right of Validation
+Safety Controls:
+- Range checks
+- Rate-of-change limits
+- CRC validation
+end note
+
+note right of AlertLogic
+Software Safety Class: C
+Fail-safe behavior
+end note
+
+@enduml

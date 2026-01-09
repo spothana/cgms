@@ -1,0 +1,29 @@
+@startuml cgms_fault_handling
+skinparam componentStyle rectangle
+
+title CGMS Fault Handling Architecture
+
+component Sensor
+component Firmware
+component FaultManager
+component AlertLogic
+component User
+
+Sensor --> Firmware : abnormal data
+Firmware --> FaultManager : fault detected
+FaultManager --> AlertLogic : fault state
+AlertLogic --> User : sensor error alert
+
+note right of FaultManager
+Fault Types:
+- Sensor drift
+- Signal saturation
+- BLE timeout
+end note
+
+note bottom of AlertLogic
+Regulatory:
+ISO 14971 Risk Control
+end note
+
+@enduml

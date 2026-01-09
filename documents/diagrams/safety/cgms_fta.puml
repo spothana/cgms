@@ -1,0 +1,50 @@
+@startuml cgms_fta
+title Fault Tree Analysis – Incorrect Glucose Value
+
+skinparam componentStyle rectangle
+
+component "Incorrect\nGlucose Value" as TOP
+
+component "Sensor Failure" as S1
+component "Signal Processing Error" as S2
+component "Calibration Error" as S3
+component "Communication Failure" as S4
+
+TOP --> S1
+TOP --> S2
+TOP --> S3
+TOP --> S4
+
+component "Enzyme Degradation" as S1a
+component "Temperature Drift" as S1b
+
+S1 --> S1a
+S1 --> S1b
+
+component "Filter Misconfiguration" as S2a
+component "ADC Saturation" as S2b
+
+S2 --> S2a
+S2 --> S2b
+
+component "User Skipped Calibration" as S3a
+component "Bad Reference Value" as S3b
+
+S3 --> S3a
+S3 --> S3b
+
+component "BLE Packet Loss" as S4a
+component "Data Corruption" as S4b
+
+S4 --> S4a
+S4 --> S4b
+
+note bottom of TOP
+Risk Control Examples:
+- Range checks
+- Rate-of-change limits
+- CRC + retries
+- Sensor expiration enforcement
+end note
+
+@enduml

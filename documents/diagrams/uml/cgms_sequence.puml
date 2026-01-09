@@ -1,0 +1,14 @@
+@startuml cgms_sequence
+participant Sensor
+participant MCU
+participant "Mobile App" as App
+participant Cloud
+
+Sensor -> MCU : sample glucose
+MCU -> MCU : filter + compensate
+MCU -> App : BLE notify(glucose)
+App -> App : update UI
+App -> Cloud : upload reading
+Cloud -> App : ack / analytics
+
+@enduml

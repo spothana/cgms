@@ -1,0 +1,26 @@
+@startuml cgms_alarm_path
+skinparam componentStyle rectangle
+
+title CGMS Alarm Path
+
+component Sensor
+component MCU
+component "Mobile App" as App
+component User
+
+Sensor --> MCU : glucose reading
+MCU --> MCU : threshold evaluation
+MCU --> App : BLE alert event
+App --> User : audible / visual alarm
+
+note right of MCU
+Latency Requirement:
+< 10 seconds
+end note
+
+note right of App
+Redundancy:
+Local alerts even if cloud unavailable
+end note
+
+@enduml

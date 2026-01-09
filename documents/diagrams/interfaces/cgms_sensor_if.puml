@@ -1,0 +1,27 @@
+@startuml cgms_sensor_if
+skinparam componentStyle rectangle
+
+title CGMS Sensor Interface
+
+component "Enzyme Electrode" as Electrode
+component "Analog Front End (AFE)" as AFE
+component "ADC" as ADC
+component "MCU" as MCU
+
+Electrode --> AFE : glucose current (nA)
+AFE --> ADC : conditioned voltage
+ADC --> MCU : digital samples
+
+note right of AFE
+AFE Functions:
+- Transimpedance amplifier
+- Noise filtering
+- Gain calibration
+end note
+
+note right of MCU
+Sampling Interval:
+1–5 minutes
+end note
+
+@enduml

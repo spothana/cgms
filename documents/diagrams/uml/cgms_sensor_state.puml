@@ -1,0 +1,35 @@
+@startuml cgms_sensor_state
+title CGMS Sensor Lifecycle State Machine
+
+[*] --> Manufacturing
+
+Manufacturing --> Stored : packaged
+Stored --> Activated : user applies sensor
+Activated --> WarmUp : power on
+
+WarmUp --> Measuring : stabilization complete
+Measuring --> Measuring : periodic sample
+
+Measuring --> Calibration : calibration requested
+Calibration --> Measuring : calibration successful
+
+Measuring --> Fault : sensor error
+Calibration --> Fault : calibration failure
+
+Fault --> Measuring : recoverable fault
+Fault --> Expired : unrecoverable fault
+
+Measuring --> Expired : wear-time exceeded
+Expired --> [*]
+
+note right of Measuring
+Normal operation
+Sampling every 1–5 minutes
+end note
+
+note right of Fault
+Triggers user alert
+Disables insulin automation
+end note
+
+@enduml

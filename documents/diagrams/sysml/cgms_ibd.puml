@@ -1,0 +1,17 @@
+@startuml cgms_ibd
+skinparam componentStyle rectangle
+
+component "Enzyme\nElectrode" as Electrode
+component "Analog Front End\n(AFE)" as AFE
+component "ADC + MCU" as MCU
+component "BLE Radio" as BLE
+component "Mobile App" as App
+component "Cloud Backend" as Cloud
+
+Electrode --> AFE : analog current
+AFE --> MCU : digitized signal
+MCU --> BLE : glucose packets
+BLE --> App : BLE notifications
+App --> Cloud : HTTPS REST API
+
+@enduml

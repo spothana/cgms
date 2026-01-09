@@ -1,0 +1,42 @@
+@startuml cgms_bdd
+skinparam classAttributeIconSize 0
+
+class CGMS {
+}
+
+class SensorSubsystem {
+  EnzymeElectrode
+  AnalogFrontEnd
+  TemperatureSensor
+}
+
+class Transmitter {
+  MCU
+  BLEStack
+  Flash
+}
+
+class ReceiverApp {
+  UI
+  AlertManager
+  TrendEngine
+}
+
+class CloudBackend {
+  Analytics
+  DataStorage
+  ClinicianPortal
+}
+
+class PowerSubsystem {
+  Battery
+  PowerMgmtIC
+}
+
+CGMS *-- SensorSubsystem
+CGMS *-- Transmitter
+CGMS *-- ReceiverApp
+CGMS *-- CloudBackend
+CGMS *-- PowerSubsystem
+
+@enduml

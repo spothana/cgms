@@ -1,0 +1,33 @@
+@startuml cgms_class
+skinparam classAttributeIconSize 0
+
+class GlucoseSensor {
+  +readRaw(): float
+  +calibrate()
+}
+
+class SignalProcessor {
+  +filter(signal): float
+  +temperatureComp(signal, temp): float
+}
+
+class GlucoseEstimator {
+  +computeMgDl(signal): float
+  +computeTrend(): Trend
+}
+
+class AlertManager {
+  +checkThresholds(value)
+  +triggerAlert(type)
+}
+
+class BLEService {
+  +notify(value)
+}
+
+GlucoseSensor --> SignalProcessor
+SignalProcessor --> GlucoseEstimator
+GlucoseEstimator --> AlertManager
+GlucoseEstimator --> BLEService
+
+@enduml
